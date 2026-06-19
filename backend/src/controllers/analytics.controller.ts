@@ -1,6 +1,8 @@
 import { Request, Response, NextFunction } from "express";
 import { prisma } from "../lib/prisma";
 import { ApiError } from "../errors/ApiError";
+import { Transaction } from "@prisma/client";
+
 
 const TEST_USER_EMAIL = "test@example.com";
 
@@ -35,7 +37,7 @@ export const getSummary = async (
         let income = 0;
         let expenses = 0;
 
-        transactions.forEach((transaction) => {
+        transactions.forEach((transaction: Transaction) => {
 
             const amount =
                 Number(transaction.amount);

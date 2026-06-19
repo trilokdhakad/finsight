@@ -2,8 +2,7 @@ import { Request, Response, NextFunction } from "express";
 
 import { prisma } from "../lib/prisma";
 import { ApiError } from "../errors/ApiError";
-
-const TEST_USER_EMAIL = "test@example.com";
+import { AuthRequest } from "../types/auth-request";
 
 export const createTransaction = async (
     req: Request,
@@ -22,25 +21,14 @@ export const createTransaction = async (
             paymentMethod
         } = req.body;
 
-        const user =
-            await prisma.user.findUnique({
-                where: {
-                    email: TEST_USER_EMAIL
-                }
-            });
-
-        if (!user) {
-            throw new ApiError(
-                404,
-                "User not found"
-            );
-        }
+        const userId =
+            (req as AuthRequest).userId;
 
         const category =
             await prisma.category.findFirst({
                 where: {
                     id: categoryId,
-                    userId: user.id
+                    userId
                 }
             });
 
@@ -60,7 +48,7 @@ export const createTransaction = async (
                     transactionDate: new Date(transactionDate),
                     description,
                     paymentMethod,
-                    userId: user.id
+                    userId
                 }
             });
 
@@ -82,24 +70,13 @@ export const getTransactions = async (
 
     try {
 
-        const user =
-            await prisma.user.findUnique({
-                where: {
-                    email: TEST_USER_EMAIL
-                }
-            });
-
-        if (!user) {
-            throw new ApiError(
-                404,
-                "User not found"
-            );
-        }
+        const userId =
+            (req as AuthRequest).userId;
 
         const transactions =
             await prisma.transaction.findMany({
                 where: {
-                    userId: user.id
+                    userId
                 },
                 include: {
                     category: true

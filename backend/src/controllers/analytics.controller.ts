@@ -2,9 +2,7 @@ import { Request, Response, NextFunction } from "express";
 import { prisma } from "../lib/prisma";
 import { ApiError } from "../errors/ApiError";
 import { Transaction } from "@prisma/client";
-
-
-const TEST_USER_EMAIL = "test@example.com";
+import { AuthRequest } from "../types/auth-request";
 
 export const getSummary = async (
     req: Request,
@@ -14,23 +12,13 @@ export const getSummary = async (
 
     try {
 
-        const user = await prisma.user.findUnique({
-            where: {
-                email: TEST_USER_EMAIL
-            }
-        });
-
-        if (!user) {
-            throw new ApiError(
-                404,
-                "User not found"
-            );
-        }
+        const userId =
+            (req as AuthRequest).userId;
 
         const transactions =
             await prisma.transaction.findMany({
                 where: {
-                    userId: user.id
+                    userId
                 }
             });
 

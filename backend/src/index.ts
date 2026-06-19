@@ -1,5 +1,7 @@
 import express from "express";
 import dotenv from "dotenv";
+import cors from "cors";
+
 import authRoutes from "./routes/auth.routes";
 import categoryRoutes from "./routes/category.routes";
 import transactionRoutes from "./routes/transaction.routes";
@@ -9,16 +11,24 @@ import { errorHandler } from "./middlewares/error.middleware";
 dotenv.config();
 
 
-const app=express();
+const app = express();
 
+app.use(
+  cors({
+    origin:
+      process.env.CLIENT_URL,
+    credentials: true,
+  })
+);
 
 app.use(express.json());
 
 
 app.get("/health",(req,res)=>{
 
-    res.json({
-        message:"FinSight API running"
+    res.status(200).json({
+        success: true,
+        message: "FinSight API running",
     });
 
 });

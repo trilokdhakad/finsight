@@ -65,35 +65,44 @@ export const getCategoryBreakdown = async (
         const transactions =
             await prisma.transaction.findMany({
                 where: {
-                    userId
+                    userId,
+                    type: "EXPENSE"
                 },
                 include: {
                     category: true
                 }
             });
 
-        const breakdown: Record<string, number> = {};
+        const breakdown:
+            Record<string, number> = {};
 
-        transactions.forEach((transaction: any) => {
+        transactions.forEach(
+            (transaction: any) => {
 
-            const categoryName =
-                transaction.category.name;
+                const categoryName =
+                    transaction.category.name;
 
-            const amount =
-                Number(transaction.amount);
+                const amount =
+                    Number(transaction.amount);
 
-            breakdown[categoryName] =
-                (breakdown[categoryName] || 0)
-                + amount;
-        });
+                breakdown[categoryName] =
+                    (breakdown[categoryName] || 0)
+                    + amount;
+            }
+        );
 
         const result =
-            Object.entries(breakdown).map(
-                ([category, amount]) => ({
-                    category,
-                    amount
-                })
-            );
+            Object.entries(breakdown)
+                .map(
+                    ([category, amount]) => ({
+                        category,
+                        amount
+                    })
+                )
+                .sort(
+                    (a, b) =>
+                        b.amount - a.amount
+                );
 
         res.status(200).json({
             success: true,

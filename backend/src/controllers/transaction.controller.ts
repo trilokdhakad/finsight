@@ -95,3 +95,102 @@ export const getTransactions = async (
         next(error);
     }
 };
+
+export const updateTransaction = async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+) => {
+
+    try {
+
+        const userId =
+            (req as AuthRequest).userId;
+
+        const id =
+            req.params.id as string;
+
+        const existingTransaction =
+            await prisma.transaction.findFirst({
+                where: {
+                    id,
+                    userId
+                }
+            });
+
+        if (!existingTransaction) {
+            throw new ApiError(
+                404,
+                "Transaction not found"
+            );
+        }
+
+        const updatedTransaction =
+            await prisma.transaction.update({
+                where: {
+                    id
+                },
+                data: {
+                    ...req.body,
+
+                    transactionDate:
+                        req.body.transactionDate
+                            ? new Date(req.body.transactionDate)
+                            : undefined
+                }
+            });
+
+        res.status(200).json({
+            success: true,
+            data: updatedTransaction
+        });
+
+    } catch (error) {
+        next(error);
+    }
+};
+
+export const deleteTransaction = async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+) => {
+
+    try {
+
+        const userId =
+            (req as AuthRequest).userId;
+
+        const id =
+            req.params.id as string;
+
+        const existingTransaction =
+            await prisma.transaction.findFirst({
+                where: {
+                    id,
+                    userId
+                }
+            });
+
+        if (!existingTransaction) {
+            throw new ApiError(
+                404,
+                "Transaction not found"
+            );
+        }
+
+        await prisma.transaction.delete({
+            where: {
+                id
+            }
+        });
+
+        res.status(200).json({
+            success: true,
+            message: "Transaction deleted"
+        });
+
+    } catch (error) {
+        next(error);
+    }
+};

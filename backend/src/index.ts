@@ -3,6 +3,7 @@ import dotenv from "dotenv";
 import authRoutes from "./routes/auth.routes";
 import categoryRoutes from "./routes/category.routes";
 import transactionRoutes from "./routes/transaction.routes";
+import analyticsRoutes from "./routes/analytics.routes";
 import { errorHandler } from "./middlewares/error.middleware";
 
 dotenv.config();
@@ -36,6 +37,11 @@ app.use(
 app.use(
     "/api/transactions",
     transactionRoutes
+);
+
+app.use(
+    "/api/analytics",
+    analyticsRoutes
 );
 
 app.use(errorHandler);
